@@ -8,9 +8,11 @@ class BasicFlowAgent:
     def __init__(self, llm):
         self.parser = JsonOutputParser()
         self.prompt0 = ChatPromptTemplate.from_template("""
-                  根据系统描述、参与者、用户故事，生成完整的基本流程步骤：
+                  根据系统描述、系统实体信息、参与者、用户故事，生成完整的基本流程步骤：
                   系统描述：
                   {system_desc}
+                  系统实体信息：
+                  {entities}
                   参与者：
                   {actor}
                   用户故事：
@@ -42,6 +44,8 @@ class BasicFlowAgent:
                   根据现有步骤和修改建议，重新生成步骤：
                   系统描述：
                   {system_desc}
+                  系统实体信息：
+                  {entities}
                   参与者：
                   {actor}
                   现有用户故事：
@@ -65,6 +69,8 @@ class BasicFlowAgent:
                           根据现有步骤和修改建议，重新生成步骤：
                           系统描述：
                           {system_desc}
+                          系统实体信息：
+                          {entities}
                           参与者：
                           {actor}
                           现有用户故事：
@@ -96,22 +102,30 @@ class BasicFlowAgent:
                         """)
         self.chain2 = self.prompt2 | llm | self.parser
 
-    def generate(self, system_desc: str, actor: Dict, user_story: Dict) -> List[str]:
+    def generate(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict) -> List[str]:
         """生成完整的基本流程步骤"""
-        result = self.chain0.invoke({"system_desc": system_desc, "actor": actor, "user_story": user_story,
-            "format_instructions": self.parser.get_format_instructions()})
+        result = self.chain0.invoke(
+            {"system_desc": system_desc, "entities": entities, "actor": actor, "user_story": user_story,
+             "format_instructions": self.parser.get_format_instructions()})
         return result
 
-    def regenerate_one_step(self, system_desc: str, actor: Dict, user_story: Dict, old_step: str, suggestion: str) -> str:
+    def regenerate_one_step(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict, old_step: str,
+                            suggestion: str) -> str:
         """重新生成步骤"""
         result = self.chain1.invoke(
-            {"system_desc": system_desc, "actor": actor, "user_story": user_story, "old_step": old_step, "suggestion": suggestion,
-                "format_instructions": self.parser.get_format_instructions()})
+            {"system_desc": system_desc, "entities": entities, "actor": actor, "user_story": user_story,
+             "old_step": old_step,
+             "suggestion": suggestion,
+             "format_instructions": self.parser.get_format_instructions()})
         return result
 
-    def regenerate(self, system_desc: str, actor: Dict, user_story: Dict, old_steps: List[str], suggestion: str) -> List[str]:
+    def regenerate(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict, old_steps: List[str],
+                   suggestion: str) -> \
+            List[str]:
         """重新生成步骤"""
         result = self.chain2.invoke(
-            {"system_desc": system_desc, "actor": actor, "user_story": user_story, "old_steps": old_steps, "suggestion": suggestion,
-                "format_instructions": self.parser.get_format_instructions()})
+            {"system_desc": system_desc, "entities": entities, "actor": actor, "user_story": user_story,
+             "old_steps": old_steps,
+             "suggestion": suggestion,
+             "format_instructions": self.parser.get_format_instructions()})
         return result
