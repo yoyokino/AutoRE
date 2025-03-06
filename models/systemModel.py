@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 
 class ExtendedFlowItem(BaseModel):
@@ -48,4 +49,3 @@ class SystemModel(BaseModel):
     system_description: str = ""
     actors: List[Actor] = []
     entities: List[Entity] = []
-

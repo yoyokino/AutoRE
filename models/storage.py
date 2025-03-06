@@ -531,4 +531,3 @@ class JSONStorage:
             raise HTTPException(404, f"Entity '{entity_name}' not found")
 
         return entity.get("attributes", [])
-

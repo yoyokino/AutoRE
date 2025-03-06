@@ -9,7 +9,6 @@ from agents.user_story_agent import UserStoryAgent
 from agents.utils.entity_analyzer import EntityAnalysisAgent
 from models.storage import JSONStorage
 from models.systemModel import Actor, UserStory
-from tests.test import actors
 
 # from utils.entity_analyzer import analyze_entities
 # from utils.quality_checker import quality_check
@@ -68,7 +67,7 @@ async def generate_actors(system_desc: str):
 @router.get("/api/actors/get")
 async def get_all_actors():
     actors = storage.get_actors()
-    return {"actors": actors }
+    return {"actors": actors}
 
 
 @router.post("/api/actors/delete")
@@ -215,7 +214,8 @@ async def delete_user_story(actor: str, old_user_story: dict):
 async def generate_conditions(actor: dict, user_story: dict):
     try:
         print(user_story)
-        conditions = condition_agent.generate(storage.get_system_description(), actor, user_story)
+        conditions = condition_agent.generate(storage.get_system_description(), storage.get_entities(), actor,
+                                              user_story)
 
         storage.add_condition(actor["actor"], user_story, conditions)
 
@@ -235,7 +235,8 @@ async def generate_all_conditions(actor: dict):
         user_stories = storage.get_user_stories(actor_name=actor["actor"])
         print(user_stories, actor)
         for user_story in user_stories:
-            conditions = condition_agent.generate(storage.get_system_description(), actor, user_story)
+            conditions = condition_agent.generate(storage.get_system_description(), storage.get_entities(), actor,
+                                                  user_story)
 
             storage.add_condition(actor["actor"], user_story, conditions)
 
@@ -250,7 +251,8 @@ async def generate_all_conditions(actor: dict):
 @router.post("/api/condition/regenerate")
 async def regenerate_condition(actor: dict, user_story: dict, old_condition: dict, suggestion: str):
     try:
-        new_condition = condition_agent.regenerate(storage.get_system_description(), actor, user_story, old_condition,
+        new_condition = condition_agent.regenerate(storage.get_system_description(), storage.get_entities(), actor,
+                                                   user_story, old_condition,
                                                    suggestion)
 
         # storage.delete_condition(actor["actor"], user_story)
@@ -286,7 +288,8 @@ async def generate_basic_flow(actor: dict, user_story: dict):
     try:
         system_desc = storage.get_system_description()
 
-        flow_steps = basic_flow_agent.generate(system_desc=system_desc, actor=actor, user_story=user_story)
+        flow_steps = basic_flow_agent.generate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
+                                               user_story=user_story)
 
         storage.delete_all_basic_flow(actor["actor"], user_story)
 
@@ -305,7 +308,8 @@ async def regenerate_basic_flow_step(actor: dict, user_story: dict, old_steps: l
     try:
         system_desc = storage.get_system_description()
 
-        new_steps = basic_flow_agent.regenerate(system_desc=system_desc, actor=actor, user_story=user_story,
+        new_steps = basic_flow_agent.regenerate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
+                                                user_story=user_story,
                                                 old_steps=old_steps, suggestion=suggestion)
 
         # 更新步骤
@@ -321,7 +325,8 @@ async def regenerate_one_basic_flow_step(actor: dict, user_story: dict, old_step
     try:
         system_desc = storage.get_system_description()
 
-        new_step = basic_flow_agent.regenerate_one_step(system_desc=system_desc, actor=actor, user_story=user_story,
+        new_step = basic_flow_agent.regenerate_one_step(system_desc=system_desc, entities=storage.get_entities(),
+                                                        actor=actor, user_story=user_story,
                                                         old_step=old_step, suggestion=suggestion)
 
         # 更新步骤
@@ -367,7 +372,8 @@ async def generate_extended_flow(actor: dict, user_story: dict):
     try:
         system_desc = storage.get_system_description()
 
-        flows = extended_flow_agent.generate(system_desc=system_desc, actor=actor, user_story=user_story)
+        flows = extended_flow_agent.generate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
+                                             user_story=user_story)
 
         storage.delete_all_extended_flow(actor["actor"], user_story)
 
@@ -386,7 +392,8 @@ async def regenerate_one_extended_flow(actor: dict, user_story: dict, old_flow: 
     try:
         system_desc = storage.get_system_description()
 
-        new_flow = extended_flow_agent.regenerate(system_desc=system_desc, actor=actor, user_story=user_story,
+        new_flow = extended_flow_agent.regenerate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
+                                                  user_story=user_story,
                                                   old_flow=old_flow, suggestion=suggestion)
         return new_flow
     except Exception as e:
@@ -433,24 +440,37 @@ async def generate_entities(actors: list[dict]):
     except Exception as e:
         raise HTTPException(500, str(e))
 
-@router.post("/api/entity/regenerate")
-async def regenerate_entities(suggestion: str):
-    """基于系统描述和用户故事自动生成实体"""
+
+@router.post("/api/entity/regenerate_one")
+async def regenerate_entity(entity: dict, suggestion: str):
+    """基于系统描述和用户故事重新生成实体"""
     try:
         system_desc = storage.get_system_description()
         actors = storage.get_actors()
 
-        entities = entity_agent.regenerate(system_desc=system_desc, actors=actors, suggestion=suggestion)
+        new_entity = entity_agent.regenerate_one(system_desc=system_desc, actors=actors, entity=entity,
+                                                 suggestion=suggestion)
 
-        print(entities)
-
-        storage.delete_all_entity()
+        print(new_entity)
 
         # 保存生成的实体
-        for entity in entities:
-            storage.add_entity(entity)
+        storage.add_entity(new_entity)
 
-        return entities
+        return new_entity
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+@router.post("/api/entity/regenerate_new_one")
+async def add_entity(suggestion: str):
+    """生成一个新实体"""
+    try:
+        system_desc = storage.get_system_description()
+        actors = storage.get_actors()
+        entities = storage.get_entities()
+        new_entity = entity_agent.add_one(system_desc=system_desc, actors=actors, entities=entities,
+                                          suggestion=suggestion)
+        return storage.add_entity(new_entity)
     except Exception as e:
         raise HTTPException(500, str(e))
 
@@ -488,33 +508,5 @@ async def delete_entity(entity_name: str):
     try:
         storage.delete_entity(entity_name)
         return {"message": f"Entity '{entity_name}' deleted successfully"}
-    except Exception as e:
-        raise HTTPException(500, str(e))
-
-
-@router.post("/api/entity/attribute/add")
-async def add_entity_attribute(entity_name: str, attribute: dict):
-    """为实体添加属性"""
-    try:
-        return storage.add_entity_attribute(entity_name, attribute)
-    except Exception as e:
-        raise HTTPException(500, str(e))
-
-
-@router.post("/api/entity/attribute/update")
-async def update_entity_attribute(entity_name: str, old_content: str, attribute: dict):
-    """更新实体属性"""
-    try:
-        return storage.update_entity_attribute(entity_name, old_content, attribute)
-    except Exception as e:
-        raise HTTPException(500, str(e))
-
-
-@router.post("/api/entity/attribute/delete")
-async def delete_entity_attribute(entity_name: str, attribute_content: str):
-    """删除实体属性"""
-    try:
-        storage.delete_entity_attribute(entity_name, attribute_content)
-        return {"message": f"Attribute '{attribute_content}' deleted successfully from entity '{entity_name}'"}
     except Exception as e:
         raise HTTPException(500, str(e))

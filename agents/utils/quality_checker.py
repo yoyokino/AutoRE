@@ -1,5 +1,3 @@
-from typing import List
-
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -38,4 +36,3 @@ class QualityCheckerAgent:
                                      "format_instructions": self.parser.get_format_instructions()})
         print(result)
         return result
-

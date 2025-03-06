@@ -1,6 +1,8 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
 from typing import Dict, List
+
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+
 
 class ActorAgent:
     def __init__(self, llm):
@@ -19,7 +21,6 @@ class ActorAgent:
                 """)  # 修正处：使用双大括号转义示例中的JSON符号
         self.chain = self.prompt | llm | self.parser
 
-
     def generate(self, system_desc: str) -> List[Dict]:
         """生成初始参与者"""
         result = self.chain.invoke({
@@ -27,5 +28,3 @@ class ActorAgent:
             "format_instructions": self.parser.get_format_instructions()
         })
         return result
-
-

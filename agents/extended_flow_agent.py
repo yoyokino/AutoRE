@@ -8,9 +8,11 @@ class ExtendedFlowAgent:
     def __init__(self, llm):
         self.parser = JsonOutputParser()
         self.prompt0 = ChatPromptTemplate.from_template("""
-                    根据系统描述、参与者、用户故事，生成完整的拓展流程步骤：
+                    根据系统描述、系统实体信息、参与者、用户故事，生成完整的拓展流程步骤：
                     系统描述：
                     {system_desc}
+                    系统实体信息：
+                    {entities}
                     参与者：
                     {actor}
                     用户故事：
@@ -96,6 +98,8 @@ class ExtendedFlowAgent:
                   根据用户故事的内容和修改建议，重新生成一个拓展流程：
                   系统描述：
                   {system_desc}
+                  系统实体信息：
+                  {entities}
                   参与者：
                   {actor}
                   现有用户故事：
@@ -158,20 +162,20 @@ class ExtendedFlowAgent:
                 """)
         self.chain1 = self.prompt1 | llm | self.parser
 
-
-    def generate(self, system_desc: str, actor: Dict, user_story: Dict) -> List[dict]:
+    def generate(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict) -> List[dict]:
         """生成完整的基本流程步骤"""
-        result = self.chain0.invoke({"system_desc": system_desc, "actor": actor, "user_story": user_story,
-                                     "format_instructions": self.parser.get_format_instructions()})
+        result = self.chain0.invoke(
+            {"system_desc": system_desc, "entities": entities, "actor": actor, "user_story": user_story,
+             "format_instructions": self.parser.get_format_instructions()})
         return result
 
-
-
-    def regenerate(self, system_desc: str, actor: Dict, user_story: Dict, old_flow: dict, suggestion: str) -> \
-    dict:
+    def regenerate(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict, old_flow: dict,
+                   suggestion: str) -> \
+            dict:
         """重新生成步骤"""
         result = self.chain1.invoke(
-            {"system_desc": system_desc, "actor": actor, "user_story": user_story, "old_flow": old_flow,
+            {"system_desc": system_desc, "entities": entities, "actor": actor, "user_story": user_story,
+             "old_flow": old_flow,
              "suggestion": suggestion,
              "format_instructions": self.parser.get_format_instructions()})
         return result

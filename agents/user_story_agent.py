@@ -1,6 +1,8 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
 from typing import Dict, List
+
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+
 
 class UserStoryAgent:
     def __init__(self, llm):
@@ -46,8 +48,7 @@ class UserStoryAgent:
                 """)  # 修正处：使用双大括号转义示例中的JSON符号
         self.chain1 = self.prompt1 | llm | self.parser
 
-
-    def generate(self, system_desc: str, actors: list[dict], actor:dict) -> List[Dict]:
+    def generate(self, system_desc: str, actors: list[dict], actor: dict) -> List[Dict]:
         """生成初始参与者"""
         result = self.chain0.invoke({
             "system_desc": system_desc,
@@ -57,7 +58,8 @@ class UserStoryAgent:
         })
         return result
 
-    def regenerate(self, system_desc: str, actors: list[dict], actor:dict, old_user_story:dict, suggestion:str) -> Dict:
+    def regenerate(self, system_desc: str, actors: list[dict], actor: dict, old_user_story: dict,
+                   suggestion: str) -> Dict:
         """生成初始参与者"""
         result = self.chain1.invoke({
             "system_desc": system_desc,
@@ -68,5 +70,3 @@ class UserStoryAgent:
             "format_instructions": self.parser.get_format_instructions()
         })
         return result
-
-
