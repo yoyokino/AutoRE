@@ -452,10 +452,6 @@ async def regenerate_entity(entity: dict, suggestion: str):
                                                  suggestion=suggestion)
 
         print(new_entity)
-
-        # 保存生成的实体
-        storage.add_entity(new_entity)
-
         return new_entity
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -470,7 +466,7 @@ async def add_entity(suggestion: str):
         entities = storage.get_entities()
         new_entity = entity_agent.add_one(system_desc=system_desc, actors=actors, entities=entities,
                                           suggestion=suggestion)
-        return storage.add_entity(new_entity)
+        return new_entity
     except Exception as e:
         raise HTTPException(500, str(e))
 

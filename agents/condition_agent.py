@@ -22,7 +22,7 @@ class ConditionAgent:
 
                   要求：
                   1. 必须包含pre_condition和post_condition两个字段
-                  2. 条件必须是若干简短清晰的陈述句
+                  2. 条件必须是若干简短清晰的陈述句，pre_condition和post_condition两个字段只能有一个字符串，字符串里可以有多个语句，但不能是列表
                   3. 返回示例格式：
                      {{"pre_condition": "用户已登录系统", "post_condition": "结算信息已保存到数据库。库存信息已更新到数据库。"}}
 
@@ -45,8 +45,8 @@ class ConditionAgent:
                   {suggestion}
 
                   要求：
-                  1. 根据两种条件类型(pre_condition和post_condition)重新生成对应字段
-                  2. 条件必须是若干简短清晰的陈述句
+                  1. 根据两种条件类型(pre_condition和post_condition)重新生成两个对应字段
+                  2. 条件必须是若干简短清晰的陈述句，pre_condition和post_condition两个字段只能有一个字符串，字符串里可以有多个语句，但不能是列表
                   3. 返回示例格式：
                      {{"pre_condition": "用户已登录系统。", "post_condition": "结算信息已保存到数据库。库存信息已更新到数据库。"}}
 

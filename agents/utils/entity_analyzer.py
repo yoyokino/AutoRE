@@ -130,13 +130,13 @@ class EntityAnalysisAgent:
                                      "format_instructions": self.parser.get_format_instructions()})
         return result
 
-    def regenerate_one(self, system_desc: str, actors: list[dict], entity: dict, suggestion: str):
+    def regenerate_one(self, system_desc: str, actors: list[dict], entity: dict, suggestion: str) -> dict:
         result = self.chain1.invoke(
             {"system_desc": system_desc, "actors": actors, "entity": entity, "suggestion": suggestion,
              "format_instructions": self.parser.get_format_instructions()})
         return result
 
-    def add_one(self, system_desc: str, actors: list[dict], entities: list[dict], suggestion: str):
+    def add_one(self, system_desc: str, actors: list[dict], entities: list[dict], suggestion: str) -> dict:
         result = self.chain2.invoke(
             {"system_desc": system_desc, "actors": actors, "entities": entities, "suggestion": suggestion,
              "format_instructions": self.parser.get_format_instructions()})
