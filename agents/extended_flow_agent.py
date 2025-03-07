@@ -7,159 +7,185 @@ from langchain_core.prompts import ChatPromptTemplate
 class ExtendedFlowAgent:
     def __init__(self, llm):
         self.parser = JsonOutputParser()
-        self.prompt0 = ChatPromptTemplate.from_template("""
-                    根据系统描述、系统实体信息、参与者、用户故事，生成完整的拓展流程步骤：
-                    系统描述：
-                    {system_desc}
-                    系统实体信息：
-                    {entities}
-                    参与者：
-                    {actor}
-                    用户故事：
-                    {user_story}
-                    
-                    拓展流程的示例如下：
-                    (Optional) *a、 经理 在任意时刻，需要进行超控操作：
-                     1、 (System) 系统 进入经理授权模式。
-                     2、 (User) 经理或收银员 执行某一经理模式的操作。
-                     3、 (System) 系统 回复到收银员授权模式。
-                    (Exception Handling) *b、 系统 在任意时刻，失败：
-                     1、 (User) 收银员 重启系统，登录，请求恢复上次状态。
-                     2、 (System) 系统 重建上次状态。
-                    (Optional) 2-3a、 顾客 告诉收银员其免税状况（例如，年长者本国人等）：
-                     1、 (User) 收银员 进行核实，并输入免税状况编码。
-                     2、 (System) 系统 记录读状况编码（在计算税金时使用）。
-                    (Selection) 4a、 现金支付：
-                     1、 (User) 收银员 输入收取的现金额。
-                     2、 (System) 系统 显示找零金额，并弹出现金抽屉。
-                     3、 (User) 收银员 放入收取的现金，并给顾客找零。
-                     4、 (System) 系统 记录该现金支付。
-                    (Selection) 4b、 信用卡支付：
-                     1、 (User) 顾客 输入信用卡账户信息。
-                     2、 (System) 系统 显示其支付信息以备验证。
-                     3、 (User) 收银员 确认。
-                    拓展流程格式解释：
-                    以上为拓展流程格式模板。每一条拓展流程左起为(Optional)、(Exception Handling)或(Selection)，用以表示该条拓展流程的属性。
-                    (Optional)：表示基本流程中可能出现的其他事件。
-                    (Exception Handling) ：表示基本流程中可能发生的异常状况。
-                    (Selection)：表示基本流程中选择的选项。
-                    属性后接拓展流程顺序标号，编号的编写方法如下：
-                    （*+小写字母）：表示在任意时刻发生的事件，字母只是序号并没有顺序的意义。
-                    （数字+小写字母）：表示在基本流程N发生的事件，字母只是序号并没有顺序的意义。
-                    （数字-数字+小写字母）：表示在基本流程M-N（第M条基本流程到第N条基本流程）发生的事件，字母只是序号并没有顺序的意义。
-                    每一条拓展流程的句尾标点必须为冒号：
-                    
-                    要求：
-                    1. 每个拓展流程包括type、id、title和content字段，content内容为一个字符串列表
-                    2. type必须为Optional、Exception Handling或Selection之一
-                    3. id需遵守以上编号编写方法
-                    4. title为引发拓展流程的条件说明
-                    5. content中，每一步的actor必须是"User"或"System"之一，每一步的action必须是清晰的动作描述
-                    6. 返回示例格式：
-                    [
-                        {{
-                            "type": "Optional",
-                            "id": "*a",
-                            "title": "经理 在任意时刻，需要进行超控操作",
-                            "content": [
-                                "(System) 系统 进入经理授权模式。",
-                                "(User) 经理或收银员 执行某一经理模式的操作。",
-                                "(System) 系统 回复到收银员授权模式。"
-                            ]
-                        }},
-                        {{
-                            "type": "Exception Handling",
-                            "id": "*b",
-                            "title": "系统 在任意时刻崩溃",
-                            "content": [
-                                "(User) 收银员 重启系统，登录，请求恢复上次状态。",
-                                "(System) 系统 重建上次状态。"
-                            ]
-                        }},
-                        {{
-                            "type": "Selection",
-                            "id": "4a",
-                            "title": "现金支付",
-                            "content": [
-                                "(User) 收银员 输入收取的现金额。",
-                                "(System) 系统 显示找零金额，并弹出现金抽屉。",
-                                "(User) 收银员 放入收取的现金，并给顾客找零。",
-                                "(System) 系统 记录该现金支付。"
-                            ]
-                        }},
-                        ......
+        self.prompt0 = ChatPromptTemplate.from_template(
+            """Based on the given system description, entity information, actor, and user story, generate the complete set of Extended Flow steps:
+            
+            System Description:
+            {system_desc}
+            
+            System Entity Information:
+            {entities}
+            
+            Actor:
+            {actor}
+            
+            User-Story:
+            {user_story}
+            
+            Extended Flow Example:
+            
+            (Optional) *a, The manager needs to perform override operations at any time:
+              1. (System) System enters manager-authorized mode.
+              2. (User) Manager or cashier performs an operation requiring manager mode.
+              3. (System) System returns to cashier-authorized mode.
+            
+            (Exception Handling) *b, The system fails at any time:
+              1. (User) Cashier restarts the system, logs in, and requests a recovery of the previous state.  
+              2. (System) System recovers to the previous state.
+            
+            (Optional) 2-3a, Customer informs cashier of tax-exempt status (e.g., senior citizen, local resident):
+              1. (User) Cashier verifies and enters the tax-exempt status code.
+              2. (System) System records the tax-exempt status code (used when calculating tax).
+            
+            (Selection) 4a, Cash payment:
+              1. (User) Cashier enters the received cash amount.
+              2. (System) System displays the change amount and opens the cash drawer.
+              3. (User) Cashier puts the cash received into drawer and gives the customer change.
+              4. (System) System records the cash transaction.
+            
+            (Selection) 4b, Credit card payment:
+              1. (User) Customer enters credit card details.
+              2. (System) System displays payment information for verification.
+              3. (User) Cashier confirms.
+            
+            Explanation of Extended Flow Format:
+            The above example is a template illustrating the structure of Extended Flows. Each extended flow begins with a property tag: (Optional), (Exception Handling), or (Selection), indicating the type of the extended flow.
+            
+            - (Optional): other possible events occurring within the basic flow.
+            - (Exception Handling): possible exceptional situations occurring within the basic flow.
+            - (Selection): options to choose from within the basic flow.
+            
+            Following the property tag is an identifier representing when this extended flow happens. Identifier formats:  
+            - (* + lower-case letter): events occurring at any time.
+            - (number + lower-case letter): events occurring at step number N of basic flow.
+            - (number-number + lower-case letter): events occurring between steps M and N (inclusive) in the basic flow.
+            (Letters are only used for ordering; no sequential meaning is implied.)
+            
+            Every extended flow title must end with a colon ":".
+            
+            Requirements:
+            1. Each Extended Flow must include "type", "id", "title", and "content", where "content" is a list of strings.
+            2. "type" must be one of: "Optional", "Exception Handling", or "Selection".
+            3. "id" must strictly follow the formatting rules mentioned above.
+            4. "title" must clearly specify the condition triggering the Extended Flow.
+            5. In "content", each step must start with "(User)" or "(System)" and clearly describe the action.
+            6. Example of expected returned format:
+            [
+                {
+                    "type": "Optional",
+                    "id": "*a",
+                    "title": "Manager needs to perform override operations at any time:",
+                    "content": [
+                        "(System) System enters manager-authorized mode.",
+                        "(User) Manager or cashier performs an operation requiring manager mode.",
+                        "(System) System returns to cashier-authorized mode."
                     ]
-                    
-                    返回JSON格式：{format_instructions}
-                    """)
+                },
+                {
+                    "type": "Exception Handling",
+                    "id": "*b",
+                    "title": "System crashes at any time:",
+                    "content": [
+                        "(User) Cashier restarts the system, logs in, and requests recovery of previous state.",
+                        "(System) System recovers to the previous state."
+                    ]
+                },
+                {
+                    "type": "Selection",
+                    "id": "4a",
+                    "title": "Cash Payment:",
+                    "content": [
+                        "(User) Cashier enters the received cash amount.",
+                        "(System) System displays change amount and opens cash drawer.",
+                        "(User) Cashier puts the received cash in drawer and gives the customer change.",
+                        "(System) System records the cash transaction."
+                    ]
+                }
+                ...
+            ]
+            
+            Return in JSON format: {format_instructions}""")
         self.chain0 = self.prompt0 | llm | self.parser
 
-        self.prompt1 = ChatPromptTemplate.from_template("""
-                  根据用户故事的内容和修改建议，重新生成一个拓展流程：
-                  系统描述：
-                  {system_desc}
-                  系统实体信息：
-                  {entities}
-                  参与者：
-                  {actor}
-                  现有用户故事：
-                  {user_story}
-                  原有拓展流程：
-                  {old_flow}
-                  修改建议：
-                  {suggestion}
-                    
-                  拓展流程的示例如下：
-                  (Optional) *a、 经理 在任意时刻，需要进行超控操作：
-                   1、 (System) 系统 进入经理授权模式。
-                   2、 (User) 经理或收银员 执行某一经理模式的操作。
-                   3、 (System) 系统 回复到收银员授权模式。
-                  (Exception Handling) *b、 系统 在任意时刻，失败：
-                   1、 (User) 收银员 重启系统，登录，请求恢复上次状态。
-                   2、 (System) 系统 重建上次状态。
-                  (Optional) 2-3a、 顾客 告诉收银员其免税状况（例如，年长者本国人等）：
-                   1、 (User) 收银员 进行核实，并输入免税状况编码。
-                   2、 (System) 系统 记录读状况编码（在计算税金时使用）。
-                  (Selection) 4a、 现金支付：
-                   1、 (User) 收银员 输入收取的现金额。
-                   2、 (System) 系统 显示找零金额，并弹出现金抽屉。
-                   3、 (User) 收银员 放入收取的现金，并给顾客找零。
-                   4、 (System) 系统 记录该现金支付。
-                  (Selection) 4b、 信用卡支付：
-                   1、 (User) 顾客 输入信用卡账户信息。
-                   2、 (System) 系统 显示其支付信息以备验证。
-                   3、 (User) 收银员 确认。
-                  拓展流程格式解释：
-                  以上为拓展流程格式模板。每一条拓展流程左起为(Optional)、(Exception Handling)或(Selection)，用以表示该条拓展流程的属性。
-                  (Optional)：表示基本流程中可能出现的其他事件。
-                  (Exception Handling) ：表示基本流程中可能发生的异常状况。
-                  (Selection)：表示基本流程中选择的选项。
-                  属性后接拓展流程顺序标号，编号的编写方法如下：
-                  （*+小写字母）：表示在任意时刻发生的事件，字母只是序号并没有顺序的意义。
-                  （数字+小写字母）：表示在基本流程N发生的事件，字母只是序号并没有顺序的意义。
-                  （数字-数字+小写字母）：表示在基本流程M-N（第M条基本流程到第N条基本流程）发生的事件，字母只是序号并没有顺序的意义。
-                  每一条拓展流程的句尾标点必须为冒号：
-                  
-                  要求：
-                  1. 重新生成的拓展流程仍应包括type、id、title和content字段，content内容为一个字符串列表
-                  2. type必须为Optional、Exception Handling或Selection之一
-                  3. id需遵守以上编号编写方法
-                  4. title为引发拓展流程的条件说明
-                  5. content中，每一步的actor必须是"User"或"System"之一，每一步的action必须是清晰的动作描述
-                  6. 返回示例格式：
-                  {{
-                      "type": "Optional",
-                      "id": "*a",
-                      "title": "经理 在任意时刻，需要进行超控操作",
-                      "content": [
-                          "(System) 系统 进入经理授权模式。",
-                          "(User) 经理或收银员 执行某一经理模式的操作。",
-                          "(System) 系统 回复到收银员授权模式。"
-                      ]
-                  }}
-                    
-                  返回JSON格式：{format_instructions}
-                """)
+        self.prompt1 = ChatPromptTemplate.from_template(
+            """Based on the given user story and modification suggestions, regenerate one Extended Flow:
+            
+            System Description:  
+            {system_desc}  
+            
+            System Entity Information:  
+            {entities}  
+            
+            Actor:  
+            {actor}  
+            
+            Current User Story:  
+            {user_story}  
+            
+            Original Extended Flow:  
+            {old_flow}  
+            
+            Modification Suggestions:  
+            {suggestion}  
+            
+            Extended Flow Example:
+            (Optional) *a, Manager needs to perform override operations at any time:
+              1. (System) System enters manager-authorized mode.
+              2. (User) Manager or cashier performs an operation requiring manager mode.
+              3. (System) System returns to cashier-authorized mode.
+            
+            (Exception Handling) *b, System fails at any time:
+              1. (User) Cashier restarts the system, logs in, and requests recovery of previous state.
+              2. (System) System recovers to the previous state.
+            
+            (Optional) 2-3a, Customer informs cashier of tax-exempt status (e.g., senior citizen, local resident):
+              1. (User) Cashier verifies and enters tax-exempt status code.
+              2. (System) System records the tax-exempt status code (used when calculating tax).
+            
+            (Selection) 4a, Cash payment:
+              1. (User) Cashier enters the received cash amount.
+              2. (System) System displays change amount and opens cash drawer.
+              3. (User) Cashier puts the received cash in the drawer and gives the customer change.
+              4. (System) System records the cash transaction.
+            
+            (Selection) 4b, Credit card payment:
+              1. (User) Customer enters credit card details.
+              2. (System) System displays payment information for verification.
+              3. (User) Cashier confirms.
+            
+            Explanation of Extended Flow Format:
+            Above is the template for the extended flow. Each Extended Flow starts with a type indicator (Optional), (Exception Handling), or (Selection):
+            
+            - (Optional): Indicates other events that may occur within the basic flow.
+            - (Exception Handling): Indicates exceptions that may occur within the basic flow.
+            - (Selection): Indicates alternative choices within the basic flow.
+            
+            The type indicator is followed by an identifier (id), structured as below:
+            - (* + lowercase letter): indicates events occurring at any time (the letters are purely labels without sequential meaning).
+            - (number + lowercase letter): indicates the event occurs at step N of the basic flow (letters are purely labels without sequential meaning).
+            - (number-number + lowercase letter): indicates the event occurs between steps M–N of the basic flow (letters are purely labels without sequential meaning).
+            
+            Every Extended Flow title must end with a colon (":").
+            
+            Requirements:
+            1. The regenerated Extended Flow must include "type", "id", "title", and "content" fields; "content" is a list of strings.
+            2. "type" must be exactly one of "Optional", "Exception Handling", or "Selection".
+            3. "id" must follow the identifier guidelines defined above.
+            4. "title" must clearly indicate the condition triggering this Extended Flow.
+            5. Each step inside "content" must clearly begin with "(User)" or "(System)" and contain a clear action description.
+            6. Example of returned format:
+            {
+                "type": "Optional",
+                "id": "*a",
+                "title": "Manager needs to perform override operations at any time:",
+                "content": [
+                    "(System) System enters manager-authorized mode.",
+                    "(User) Manager or cashier performs an operation requiring manager mode.",
+                    "(System) System returns to cashier-authorized mode."
+                ]
+            }
+            
+            Return in JSON format: {format_instructions}""")
         self.chain1 = self.prompt1 | llm | self.parser
 
     def generate(self, system_desc: str, entities: List[dict], actor: Dict, user_story: Dict) -> List[dict]:

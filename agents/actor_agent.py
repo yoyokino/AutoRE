@@ -7,18 +7,17 @@ from langchain_core.prompts import ChatPromptTemplate
 class ActorAgent:
     def __init__(self, llm):
         self.parser = JsonOutputParser()
-        self.prompt = ChatPromptTemplate.from_template("""
-                  根据系统描述生成参与者列表：
-                  {system_desc}
-
-                  要求：
-                  1. 每个参与者必须包含actor和description字段
-                  2. 参与者数量建议3-5个
-                  3. 返回示例格式：
-                     [{{"actor": "用户", "description": "系统的主要使用者"}},...]
-
-                  返回JSON格式：{format_instructions}
-                """)  # 修正处：使用双大括号转义示例中的JSON符号
+        self.prompt = ChatPromptTemplate.from_template(
+            """Generate a list of actors based on the system description:
+            {system_desc}
+            
+            Requirements:
+            1. Each actor must include "actor" and "description" fields.
+            2. Example of the expected returned format:
+               [{{"actor": "User", "description": "The primary user of the system"}}, ...]
+            
+            Return in JSON format: {format_instructions}"""
+        )  # 修正处：使用双大括号转义示例中的JSON符号
         self.chain = self.prompt | llm | self.parser
 
     def generate(self, system_desc: str) -> List[Dict]:
