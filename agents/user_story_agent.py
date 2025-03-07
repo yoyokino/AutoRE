@@ -22,7 +22,8 @@ class UserStoryAgent:
             Requirements:
             1. Each User-Story must contain only a single field "user_story", expressed clearly and concisely in one sentence, following the standard User-Story format.
             2. Each User-Story must relate specifically to the specified actor.
-            3. Example of expected format:
+            3. You must return a list of dict, not a dict containing list.
+            4. Example of expected format:
                [{{"user_story": "As a cashier, I want to process item checkout so that the customer can pay, completing the purchase and enabling the system to record the transaction."}}, ...]
             
             Return in JSON format: {format_instructions}""")  # 修正处：使用双大括号转义示例中的JSON符号

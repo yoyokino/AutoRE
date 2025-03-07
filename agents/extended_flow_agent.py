@@ -69,7 +69,8 @@ class ExtendedFlowAgent:
             3. "id" must strictly follow the formatting rules mentioned above.
             4. "title" must clearly specify the condition triggering the Extended Flow.
             5. In "content", each step must start with "(User)" or "(System)" and clearly describe the action.
-            6. Example of expected returned format:
+            6. You must return a list of dict, not a dict containing list.
+            7. Example of expected returned format:
             [
                 {{
                     "type": "Optional",

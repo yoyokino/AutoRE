@@ -213,8 +213,7 @@ async def generate_all_conditions(actor: dict):
 async def regenerate_condition(actor: dict, user_story: dict, old_condition: dict, suggestion: str):
     try:
         new_condition = condition_agent.regenerate(storage.get_system_description(), storage.get_entities(), actor,
-                                                   user_story, old_condition,
-                                                   suggestion)
+                                                   user_story, old_condition, suggestion)
 
         # storage.delete_condition(actor["actor"], user_story)
         # storage.add_condition(actor["actor"], user_story, new_condition)
@@ -249,8 +248,12 @@ async def generate_basic_flow(actor: dict, user_story: dict):
     try:
         system_desc = storage.get_system_description()
 
+        print(system_desc)
+
         flow_steps = basic_flow_agent.generate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
                                                user_story=user_story)
+
+        print(flow_steps)
 
         storage.delete_all_basic_flow(actor["actor"], user_story)
 
@@ -270,8 +273,7 @@ async def regenerate_basic_flow_step(actor: dict, user_story: dict, old_steps: l
         system_desc = storage.get_system_description()
 
         new_steps = basic_flow_agent.regenerate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
-                                                user_story=user_story,
-                                                old_steps=old_steps, suggestion=suggestion)
+                                                user_story=user_story, old_steps=old_steps, suggestion=suggestion)
 
         # 更新步骤
         # storage.update_basic_flow_step(actor["actor"], user_story, new_steps)
@@ -287,8 +289,8 @@ async def regenerate_one_basic_flow_step(actor: dict, user_story: dict, old_step
         system_desc = storage.get_system_description()
 
         new_step = basic_flow_agent.regenerate_one_step(system_desc=system_desc, entities=storage.get_entities(),
-                                                        actor=actor, user_story=user_story,
-                                                        old_step=old_step, suggestion=suggestion)
+                                                        actor=actor, user_story=user_story, old_step=old_step,
+                                                        suggestion=suggestion)
 
         # 更新步骤
         # storage.update_basic_flow_step(actor["actor"], user_story, new_step)
@@ -354,8 +356,7 @@ async def regenerate_one_extended_flow(actor: dict, user_story: dict, old_flow: 
         system_desc = storage.get_system_description()
 
         new_flow = extended_flow_agent.regenerate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
-                                                  user_story=user_story,
-                                                  old_flow=old_flow, suggestion=suggestion)
+                                                  user_story=user_story, old_flow=old_flow, suggestion=suggestion)
         return new_flow
     except Exception as e:
         raise HTTPException(500, str(e))
