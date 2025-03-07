@@ -27,7 +27,7 @@ class BasicFlowAgent:
             
             Requirements:
             1. Example of expected returned format:
-               {"user_story": "As a cashier, I want to process item checkout so that the customer can pay to complete the shopping and the system can record the transaction."}
+               {{"user_story": "As a cashier, I want to process item checkout so that the customer can pay to complete the shopping and the system can record the transaction."}}
             2. The regenerated User-Story must contain only one field ("user_story"), expressed clearly and concisely in one sentence as a requirement in the form of a User-Story.
             
             Return in JSON format: {format_instructions}""")

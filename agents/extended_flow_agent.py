@@ -71,7 +71,7 @@ class ExtendedFlowAgent:
             5. In "content", each step must start with "(User)" or "(System)" and clearly describe the action.
             6. Example of expected returned format:
             [
-                {
+                {{
                     "type": "Optional",
                     "id": "*a",
                     "title": "Manager needs to perform override operations at any time:",
@@ -80,8 +80,8 @@ class ExtendedFlowAgent:
                         "(User) Manager or cashier performs an operation requiring manager mode.",
                         "(System) System returns to cashier-authorized mode."
                     ]
-                },
-                {
+                }},
+                {{
                     "type": "Exception Handling",
                     "id": "*b",
                     "title": "System crashes at any time:",
@@ -89,8 +89,8 @@ class ExtendedFlowAgent:
                         "(User) Cashier restarts the system, logs in, and requests recovery of previous state.",
                         "(System) System recovers to the previous state."
                     ]
-                },
-                {
+                }},
+                {{
                     "type": "Selection",
                     "id": "4a",
                     "title": "Cash Payment:",
@@ -100,7 +100,7 @@ class ExtendedFlowAgent:
                         "(User) Cashier puts the received cash in drawer and gives the customer change.",
                         "(System) System records the cash transaction."
                     ]
-                }
+                }}
                 ...
             ]
             
@@ -174,7 +174,7 @@ class ExtendedFlowAgent:
             4. "title" must clearly indicate the condition triggering this Extended Flow.
             5. Each step inside "content" must clearly begin with "(User)" or "(System)" and contain a clear action description.
             6. Example of returned format:
-            {
+            {{
                 "type": "Optional",
                 "id": "*a",
                 "title": "Manager needs to perform override operations at any time:",
@@ -183,7 +183,7 @@ class ExtendedFlowAgent:
                     "(User) Manager or cashier performs an operation requiring manager mode.",
                     "(System) System returns to cashier-authorized mode."
                 ]
-            }
+            }}
             
             Return in JSON format: {format_instructions}""")
         self.chain1 = self.prompt1 | llm | self.parser

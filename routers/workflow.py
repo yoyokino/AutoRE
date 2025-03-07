@@ -45,12 +45,7 @@ async def generate_actors(system_desc: str):
         raw_actors = actor_agent.generate(system_desc)
         print(raw_actors)
 
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
+        storage.delete_all_entity()
 
         created = []
         storage.delete_all_actors()
@@ -97,13 +92,6 @@ async def generate_user_stories(actor: dict):
         raw_user_stories = user_story_agent.generate(storage.get_system_description(), storage.get_actors(), actor)
         print(raw_user_stories)
 
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
-
         storage.delete_all_user_stories(actor["actor"])
 
         for user_story_data in raw_user_stories:
@@ -119,6 +107,7 @@ async def generate_user_stories(actor: dict):
 async def generate_all_user_stories():
     try:
         actors = storage.get_actors()
+        print(actors)
         # 调用Agent生成
         for actor in actors:
             raw_user_stories = user_story_agent.generate(storage.get_system_description(), storage.get_actors(), actor)
@@ -129,13 +118,6 @@ async def generate_all_user_stories():
             for user_story_data in raw_user_stories:
                 user_story = UserStory(**user_story_data)
                 storage.add_user_story(actor["actor"], user_story)
-
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
 
         return {"actors": storage.get_actors(), }
     except Exception as e:
@@ -151,15 +133,6 @@ async def regenerate_user_stories(actor: dict, old_user_story: dict, suggestion:
                                                      old_user_story, suggestion)
         print(new_user_story)
 
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
-
-        # storage.update_user_story(actor["actor"], UserStory(**old_user_story), UserStory(**new_user_story))
-
         return {"new_user_story": new_user_story}
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -168,12 +141,6 @@ async def regenerate_user_stories(actor: dict, old_user_story: dict, suggestion:
 @router.post("/api/user_story/update")
 async def update_user_story(actor: dict, old_user_story: dict, new_user_story: dict):
     try:
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
 
         print(storage.update_user_story(actor["actor"], UserStory(**old_user_story), UserStory(**new_user_story)))
 
@@ -185,12 +152,6 @@ async def update_user_story(actor: dict, old_user_story: dict, new_user_story: d
 @router.post("/api/user_story/add")
 async def add_user_story(actor: str, new_user_story: dict):
     try:
-        # # 执行质量检测
-        # if not quality_check(raw_actors, type="actor"):
-        #     raise HTTPException(400, "Quality check failed")
-        #
-        # # 实体分析
-        # entities = analyze_entities(raw_actors)
 
         storage.add_user_story(actor, UserStory(**new_user_story))
 
