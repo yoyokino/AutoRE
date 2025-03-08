@@ -70,7 +70,8 @@ class ExtendedFlowAgent:
             4. "title" must clearly specify the condition triggering the Extended Flow.
             5. In "content", each step must start with "(User)" or "(System)" and clearly describe the action.
             6. You must return a list of dict, not a dict containing list.
-            7. Example of expected returned format:
+            7. The number of Extended Flows should be between 0 and 3.
+            8. Example of expected returned format:
             [
                 {{
                     "type": "Optional",
@@ -109,7 +110,7 @@ class ExtendedFlowAgent:
         self.chain0 = self.prompt0 | llm | self.parser
 
         self.prompt1 = ChatPromptTemplate.from_template(
-            """Based on the given user story and modification suggestions, regenerate one Extended Flow:
+            """Based on the given user story and modification suggestion, regenerate one Extended Flow:
             
             System Description:  
             {system_desc}  
@@ -126,7 +127,7 @@ class ExtendedFlowAgent:
             Original Extended Flow:  
             {old_flow}  
             
-            Modification Suggestions:  
+            Modification Suggestion:  
             {suggestion}  
             
             Extended Flow Example:

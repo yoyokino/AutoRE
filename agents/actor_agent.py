@@ -14,7 +14,8 @@ class ActorAgent:
             Requirements:
             1. Each actor must include "actor" and "description" fields.
             2. You must return a list of dict, not a dict containing list.
-            3. Example of the expected returned format:
+            3. The number of actors should be between 3 and 5.
+            4. Example of the expected returned format:
                [{{"actor": "User", "description": "The primary user of the system"}}, ...]
             
             Return in JSON format: {format_instructions}"""

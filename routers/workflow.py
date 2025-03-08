@@ -19,7 +19,7 @@ from models.systemModel import Actor, UserStory
 #     base_url="https://api.siliconflow.cn/v1"
 # )
 
-client = ChatOpenAI(model="gpt-4o", api_key="sk-IpLlfCLqwInStaEE6COqURZARuIVL7DfsIZMCd1UuUjJOSpC",
+client = ChatOpenAI(model="gpt-4o-mini", api_key="sk-IpLlfCLqwInStaEE6COqURZARuIVL7DfsIZMCd1UuUjJOSpC",
                     base_url="https://api.chatfire.cn/v1")
 
 router = APIRouter()
@@ -63,6 +63,18 @@ async def generate_actors(system_desc: str):
 async def get_all_actors():
     actors = storage.get_actors()
     return {"actors": actors}
+
+
+@router.get("/api/entities/get")
+async def get_all_entities():
+    entities = storage.get_entities()
+    return {"entities": entities}
+
+
+@router.get("/api/system_description/get")
+async def get_system_description():
+    system_description = storage.get_system_description()
+    return {"system_description": system_description}
 
 
 @router.post("/api/actors/delete")
@@ -354,9 +366,11 @@ async def regenerate_one_extended_flow(actor: dict, user_story: dict, old_flow: 
     """重新生成单个拓展流程"""
     try:
         system_desc = storage.get_system_description()
+        print(system_desc)
 
         new_flow = extended_flow_agent.regenerate(system_desc=system_desc, entities=storage.get_entities(), actor=actor,
                                                   user_story=user_story, old_flow=old_flow, suggestion=suggestion)
+        print(new_flow)
         return new_flow
     except Exception as e:
         raise HTTPException(500, str(e))

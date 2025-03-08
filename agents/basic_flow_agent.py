@@ -71,7 +71,7 @@ class BasicFlowAgent:
             2. The "actor" must remain as originally defined in the single-step basic flow ("User" or "System"), without modification.
             3. The "action" must clearly describe an action compatible with the given modification suggestions.
             4. Example of expected returned format:
-               {"new_step": "(User) Customer should arrive at the POS cashier with items ready for purchase."}
+               {{"new_step": "(User) Customer should arrive at the POS cashier with items ready for purchase."}}
             
             Return in JSON format: {format_instructions}""")
         self.chain1 = self.prompt1 | llm | self.parser
