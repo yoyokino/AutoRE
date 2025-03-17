@@ -4,9 +4,16 @@ This project is an implementation of AutoRE method, contrasted with a manual app
 
 ## Usage
 
-**frontend:** Use AppSmith (you can use Docker Image: appsmith-ce) to load the "AutoRE.json", change the URL to your backend URL (may be 127.0.0.1:8000).
+**frontend:** 
 
-**backend:** Install the packages in "requirements.txt", then run "main.py" (better in Python 3.9 or 3.10). 
+1. Use AppSmith (you can use Docker Image: appsmith-ce) to load the "AutoRE.json".
+2. Change the URL to your backend URL (may be 127.0.0.1:8000).
+3. Deploy the project.
+
+**backend:** 
+
+1. Fill in the OpenAI format api-key and URL in "workflow.py".
+2. Install the packages in "requirements.txt", then run "main.py" (better in Python 3.9 or 3.10). 
 
 **Trial Materials:**
 
