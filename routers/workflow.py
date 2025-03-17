@@ -10,17 +10,10 @@ from agents.utils.entity_analyzer import EntityAnalysisAgent
 from models.storage import JSONStorage
 from models.systemModel import Actor, UserStory
 
-# from utils.entity_analyzer import analyze_entities
-# from utils.quality_checker import quality_check
 
-# client = ChatOpenAI(
-#     model="Pro/deepseek-ai/DeepSeek-V3",
-#     api_key="sk-puqduzsuowmyylabmjhimrjacmsnbkbwpzivefnpcevteuoo",
-#     base_url="https://api.siliconflow.cn/v1"
-# )
 
-client = ChatOpenAI(model="gpt-4o-mini", api_key="sk-IpLlfCLqwInStaEE6COqURZARuIVL7DfsIZMCd1UuUjJOSpC",
-                    base_url="https://api.chatfire.cn/v1")
+client = ChatOpenAI(model="gpt-4o-mini", api_key="sk-",
+                    base_url="")
 
 router = APIRouter()
 
