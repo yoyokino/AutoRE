@@ -2,15 +2,21 @@
 
 This project is an implementation of AutoRE method, contrasted with a manual approach.  The goal is to compare the two methods in terms of efficiency and quality of generated requirements.
 
+## Usage
+
+**frontend:** Use AppSmith (you can use Docker Image: appsmith-ce) to load the "AutoRE.json", change the URL to your backend URL (may be 127.0.0.1:8000).
+
+**backend:** Install the packages in "requirements.txt", then run "main.py" (better in Python 3.9 or 3.10). 
+
 **Trial Materials:**
 
-*   **XX Software System Description:** (Primary reference document) - *Replace XX with the actual system name.*
+*   **XX Software System Description:** Primary reference document.
 *   **Use Case Document (Draft):**  Provides a baseline for comparison.
-*   **System Options for Trial:**
+*   **Systems for Trial:**
     1.  CoCoME (16)
     2.  LoanPS (10)
     3.  ATM (6)
-    4.  LibraryMS (19)  *(The numbers in parentheses likely represent some kind of complexity metric or number of use cases - clarify if needed.)*
+    4.  LibraryMS (19)  *(The numbers in parentheses represent number of use cases)*
 
 **Trial Instructions:**
 
@@ -25,7 +31,7 @@ A stakeholder representative will use the provided tool, guided by the on-screen
 *   Preconditions
 *   Postconditions
 *   Basic Flow (Main Success Scenario)
-*   Extension Flows (Alternative Flows/Exceptions)
+*   Extension Flow (Alternative Flows/Exceptions)
 
 **Manual Method:**
 
