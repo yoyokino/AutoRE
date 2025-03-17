@@ -1,6 +1,6 @@
 # AutoRE Project README
 
-This project implements an automated requirements elicitation (AutoRE) method, contrasted with a manual approach.  The goal is to compare the two methods in terms of efficiency and quality of generated requirements.
+This project is an implementation of AutoRE method, contrasted with a manual approach.  The goal is to compare the two methods in terms of efficiency and quality of generated requirements.
 
 **Trial Materials:**
 
