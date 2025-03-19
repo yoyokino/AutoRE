@@ -12,8 +12,8 @@ from models.systemModel import Actor, UserStory
 
 
 
-client = ChatOpenAI(model="gpt-4o-mini", api_key="sk-",
-                    base_url="")
+client = ChatOpenAI(model="gemini-1.5-flash-exp-0827", api_key="sk-IpLlfCLqwInStaEE6COqURZARuIVL7DfsIZMCd1UuUjJOSpC",
+                    base_url="https://api.chatfire.cn/v1")
 
 router = APIRouter()
 
