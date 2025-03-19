@@ -2,6 +2,8 @@
 
 This project is an implementation of AutoRE method, contrasted with a manual approach.  The goal is to compare the two methods in terms of efficiency and quality of generated requirements.
 
+![img_1.png](img_1.png)
+
 ## Usage
 
 **frontend:** 
