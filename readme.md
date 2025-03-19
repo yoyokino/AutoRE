@@ -7,7 +7,7 @@ This project is an implementation of AutoRE method, contrasted with a manual app
 **frontend:** 
 
 1. Use AppSmith (you can use Docker Image: appsmith-ce) to load the "AutoRE.json".
-2. Change the URL to your backend URL (may be 127.0.0.1:8000).
+2. Change the "DataSource-LocalHost" URL into your backend URL (may be 127.0.0.1:8000).
 3. Be aware of cross-domain issues!
 4. Deploy the project.
 
